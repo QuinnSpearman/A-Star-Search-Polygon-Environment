@@ -6,6 +6,7 @@
 
 import pygame as pg
 from scipy.spatial import distance
+import math 
 pg.init()
 
 
@@ -253,14 +254,6 @@ def a_star_search(start, goal, points, polygons):
         # Put the current node in the closed list
         closedList.append(currentNode['point'])    
         
-        
-        
-        
-    
-    
-    
-    
-    #print(priorityQueue)
     
     
 def key_function(e):
@@ -273,8 +266,6 @@ def start_text(location):
 def goal_text(location):
     screen_text = font.render("G", True, black)
     gameDisplay.blit(screen_text, [location[0] + 23, location[1] - 12])
-    
-#def goal_text
         
         
         
@@ -320,16 +311,26 @@ while currNode != None:
 
 start = get_tuple(6, 3)
 goal = get_tuple(43, 20)
-    
-pg.init()
 
 white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
 green = (0, 255, 0)
+
+clock = pg.time.Clock()
+
 gameDisplay = pg.display.set_mode((width, height))
 
 pg.display.set_caption('A* Search')
+
+xGrowth = 0
+yGrowth = 0
+
+index = len(solutionPoints) - 1
+
+visitedPoints = []
+visitedPoints.append(solutionPoints[-1])
+
 
 while True:
     for event in pg.event.get():
@@ -339,21 +340,80 @@ while True:
 
     gameDisplay.fill(white)
     
+    
+    
     for polygon in polygons:
-        pg.draw.lines(gameDisplay, black, True, polygon, 2)
+        pg.draw.polygon(gameDisplay, black, polygon, 2)
     
     pg.draw.circle(gameDisplay, black, start, 3)
     pg.draw.circle(gameDisplay, black, goal, 3)
     
-    pg.draw.lines(gameDisplay, red, False, solutionPoints, 5)
+    
+    #slopeFactor = calculate_slope(solutionPoints[index], solutionPoints[index - 1])
+    if index > 0:
+        point1 = solutionPoints[index]
+        point2 = solutionPoints[index - 1]
+        
+        point1To2Distance = distance.euclidean(point1, point2)
+
+        xLength = (point2[0] - point1[0])
+        yLength = (point2[1] - point1[1])
+
+        xGrowth += (0.3 * xLength) / point1To2Distance
+        yGrowth += (0.3 * yLength) / point1To2Distance
+
+        movementXLength = point1[0] + xGrowth
+        movementYLength = point1[1] + yGrowth
+
+        movementToPoint2 = (movementXLength, movementYLength)
+
+        pg.draw.line(gameDisplay, red, point1, movementToPoint2, 3)
+
+        if int(point1To2Distance) == int(distance.euclidean(point1, movementToPoint2)):
+            index -= 1
+            xGrowth = 0
+            yGrowth = 0
+            visitedPoints.append(point2)
+        
+    if(len(visitedPoints) > 1):
+        pg.draw.lines(gameDisplay, red, False, visitedPoints, 3)
+    
+    
+    
+    #strPt = get_tuple(5, 5)
+    #endPt = get_tuple(5 + x, 5)
+    
+    
+    
+    #pg.draw.line(gameDisplay, green, get_tuple(5, 5), get_tuple(5 + x, 5), 2)
     
     start_text(start)
     goal_text(goal)
 
     pg.display.update()
+    
+    clock.tick(1000)
 
 pg.quit()
 quit()
+
+
+# In[5]:
+
+
+print(get_tuple(5, 5))
+
+
+# In[6]:
+
+
+print(solutionPoints)
+
+
+# In[13]:
+
+
+calculate_slope((2, 2), (4, 8))
 
 
 # In[ ]:
