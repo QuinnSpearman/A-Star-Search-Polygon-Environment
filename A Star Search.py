@@ -331,12 +331,21 @@ index = len(solutionPoints) - 1
 visitedPoints = []
 visitedPoints.append(solutionPoints[-1])
 
+spaceBarPressed = False
+
+speed = 1
 
 while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
-
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_SPACE:
+                spaceBarPressed = True
+            if event.key == pg.K_DOWN:
+                speed -= 0.2
+            if event.key == pg.K_UP:
+                speed += 0.2
 
     gameDisplay.fill(white)
     
@@ -350,7 +359,7 @@ while True:
     
     
     #slopeFactor = calculate_slope(solutionPoints[index], solutionPoints[index - 1])
-    if index > 0:
+    if index > 0 and spaceBarPressed:
         point1 = solutionPoints[index]
         point2 = solutionPoints[index - 1]
         
@@ -359,8 +368,8 @@ while True:
         xLength = (point2[0] - point1[0])
         yLength = (point2[1] - point1[1])
 
-        xGrowth += (0.3 * xLength) / point1To2Distance
-        yGrowth += (0.3 * yLength) / point1To2Distance
+        xGrowth += ((0.3 * xLength) * speed) / point1To2Distance
+        yGrowth += ((0.3 * yLength) * speed) / point1To2Distance
 
         movementXLength = point1[0] + xGrowth
         movementYLength = point1[1] + yGrowth
@@ -396,28 +405,4 @@ while True:
 
 pg.quit()
 quit()
-
-
-# In[5]:
-
-
-print(get_tuple(5, 5))
-
-
-# In[6]:
-
-
-print(solutionPoints)
-
-
-# In[13]:
-
-
-calculate_slope((2, 2), (4, 8))
-
-
-# In[ ]:
-
-
-
 
